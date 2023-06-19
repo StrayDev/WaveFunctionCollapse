@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -48,8 +49,9 @@ public class ModuleImporter : MonoBehaviour
         // register socket info -------------
         foreach (var mesh in meshList)
         {
-            var prototype = new Prototype("__", mesh, 0);
+            var prototype = new Prototype($"{uid}__", mesh, 0);
 
+            // for each face
             for (var i = 0; i < 6; i++)
             {
                 // get socket vertices aligned to the x axis
@@ -81,7 +83,35 @@ public class ModuleImporter : MonoBehaviour
 
         socketCount = sockets.Count;
 
+
         // define possible neighbours
+        foreach(var prototype in prototypes)
+        {
+            // we check for each face
+            for(var i = 0; i < 6; i++)
+            {
+                // cycle through all of the other prototypes
+                foreach (var other in prototypes)
+                {
+                    // and each face
+                    for (var j = 0; j < 6; j++)
+                    {
+                        // skip if no match 
+                        if (!prototype.sockets[i].Equals(other.sockets[j])) continue;
+
+                        // on match add to list of neighbors
+                        prototype.neighbors[i].Add(other.hashId);
+                    }
+                }
+
+
+            }
+        }
+        // for each prototype
+        // for each face 
+        // foreach prototype 
+
+
     }
 
     private bool SocketExists(Vector3[] socketVertices, out string socket)
@@ -90,17 +120,22 @@ public class ModuleImporter : MonoBehaviour
         
         foreach (var kvp in sockets)
         {
+            // check if number of verts is the same
             if (kvp.Value.Length != socketVertices.Length) continue;
 
-            var v1 = GetHashFromArray(kvp.Value);
-            var v2 = GetHashFromArray(socketVertices);
+            // compare verts
+            for(var i = 0; i < socketVertices.Length; i++)
+            {
+                var is_same = socketVertices[i].x == kvp.Value[i].x;
+                if (is_same) continue;
+            }
 
-            if (v1 != v2) continue;
-            
+            // all vertices are the same
             socket = kvp.Key;
             return true;
         }
 
+        // no match found
         return false;
     }
 
@@ -126,13 +161,15 @@ public class ModuleImporter : MonoBehaviour
         }
 
         sockets.Add(socket, socketVertices);
-        sockets.Add(socket += 'f', mirrorVertices);
+        sockets.Add(socket + 'f', mirrorVertices);
         return socket;
     }
 
     private static bool IsSymmetrical(Vector3[] socketVertices, out Vector3[] mirrorVertices)
     {
-        mirrorVertices = socketVertices;
+        // create a copy of the vertices
+        mirrorVertices = new Vector3[socketVertices.Length];
+        Array.Copy(socketVertices, mirrorVertices, socketVertices.Length);
 
         // filp the vertices on the x axis
         for (var i = 0; i < mirrorVertices.Length; i++)
@@ -140,7 +177,16 @@ public class ModuleImporter : MonoBehaviour
             mirrorVertices[i].x *= -1;
         }
 
-        return socketVertices == mirrorVertices;
+        // check if al vertices are inverted pars
+        for(var j = 0; j < socketVertices.Count(); j++)
+        {
+            // check if vertices are inverted pars
+            if (socketVertices[j].x != mirrorVertices[j].x)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private Vector3[] GetSocketVertices(Vector3[] vertices)
@@ -237,13 +283,16 @@ public class ModuleImporter : MonoBehaviour
     
     private void OnDrawGizmos()
     {
+        if (prototypes.Count < 1) return;
+
         var renderers = GetComponentsInChildren<MeshRenderer>();
 
         for (var r = 0; r < renderers.Length; r++)
         {
             var p = prototypes[r];
             var t = renderers[r].transform;
-            
+
+            Handles.color = Color.white;
             Handles.DrawWireCube(t.position, Vector3.one);
             
             for (var i = 0; i < 6; i++)

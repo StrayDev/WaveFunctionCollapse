@@ -43,6 +43,15 @@ public class Module
 [System.Serializable]
 public class Prototype
 {
+    public Prototype(string name, Mesh mesh, int rotation)
+    {
+        this.name = name + " R" + rotation;
+        this.mesh = mesh;
+        this.rotation = rotation;
+
+        this.hashId = this.name.GetHashCode();
+    }
+
     public string name;
     public int hashId;
     
@@ -63,12 +72,5 @@ public class Prototype
         new List<int>(),
     };
     
-    public Prototype(string name, Mesh mesh, int rotation)
-    {
-        this.name = name + " R" + rotation;
-        this.mesh = mesh;
-        this.rotation = rotation;
-        
-        this.hashId = this.name.GetHashCode();
-    }
+
 }
