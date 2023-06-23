@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028331, g: 0.2257133, b: 0.3069217, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -139,7 +139,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 70401cd19a1230940b774dfade2fa555,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 70401cd19a1230940b774dfade2fa555,
         type: 3}
@@ -149,7 +149,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 70401cd19a1230940b774dfade2fa555,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 70401cd19a1230940b774dfade2fa555,
         type: 3}
@@ -946,7 +946,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: bb1abdded187fb4419e166fe100496ff,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bb1abdded187fb4419e166fe100496ff,
         type: 3}
@@ -956,7 +956,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: bb1abdded187fb4419e166fe100496ff,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bb1abdded187fb4419e166fe100496ff,
         type: 3}
@@ -1110,7 +1110,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d63da2ce6d646f044b42a8db2da1fb4e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d63da2ce6d646f044b42a8db2da1fb4e,
         type: 3}
@@ -1120,7 +1120,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d63da2ce6d646f044b42a8db2da1fb4e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d63da2ce6d646f044b42a8db2da1fb4e,
         type: 3}
@@ -1356,7 +1356,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 9e4b90ae550360c4298ed26e0d308fcd,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9e4b90ae550360c4298ed26e0d308fcd,
         type: 3}
@@ -1366,7 +1366,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 9e4b90ae550360c4298ed26e0d308fcd,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9e4b90ae550360c4298ed26e0d308fcd,
         type: 3}
@@ -1529,7 +1529,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb8aee42cab7d34a9b87fc3fe7f4890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  socketCount: 11
   prototypes:
   - name: 0__ R0
     hashId: 1676256714
@@ -1621,17 +1620,6 @@ MonoBehaviour:
     - 1s
   - name: 8__ R0
     hashId: 1676264898
-    mesh: {fileID: -2432090755550338912, guid: 558ba71787ad6df4583dc19a713824c1, type: 3}
-    rotation: 0
-    sockets:
-    - 8m
-    - 8f
-    - -1
-    - 2v
-    - -1
-    - 1s
-  - name: 9__ R0
-    hashId: 1676263875
     mesh: {fileID: -2432090755550338912, guid: 5320f2e999476ad4484d2c0585a9c946, type: 3}
     rotation: 0
     sockets:
@@ -1641,8 +1629,8 @@ MonoBehaviour:
     - 3v
     - 8f
     - 1s
-  - name: 10__ R0
-    hashId: -1347496525
+  - name: 9__ R0
+    hashId: 1676263875
     mesh: {fileID: -2432090755550338912, guid: a8f65bfc54884bc429e26641834db5de, type: 3}
     rotation: 0
     sockets:
@@ -1652,19 +1640,19 @@ MonoBehaviour:
     - 4v
     - -1
     - 8m
-  - name: 11__ R0
-    hashId: -1428566760
+  - name: 10__ R0
+    hashId: -1347496525
     mesh: {fileID: -2432090755550338912, guid: 729d458a6399acc44b43be29aee604d3, type: 3}
     rotation: 0
     sockets:
     - 5s
     - 8f
-    - 12v
+    - 11v
     - 2v
     - -1
     - 2f
-  - name: 12__ R0
-    hashId: -104918531
+  - name: 11__ R0
+    hashId: -1428566760
     mesh: {fileID: -2432090755550338912, guid: bb1abdded187fb4419e166fe100496ff, type: 3}
     rotation: 0
     sockets:
@@ -1674,8 +1662,8 @@ MonoBehaviour:
     - 2v
     - -1
     - 2m
-  - name: 14__ R1
-    hashId: -1671777466
+  - name: 1__ R1
+    hashId: -1052627664
     mesh: {fileID: -2432090755550338912, guid: 5b6f22e2bb26e3f47a24fe3aee7baf19, type: 3}
     rotation: 1
     sockets:
@@ -1685,8 +1673,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 15__ R2
-    hashId: -1752847702
+  - name: 1__ R2
+    hashId: -1455912191
     mesh: {fileID: -2432090755550338912, guid: 5b6f22e2bb26e3f47a24fe3aee7baf19, type: 3}
     rotation: 2
     sockets:
@@ -1696,8 +1684,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 16__ R3
-    hashId: -429199474
+  - name: 1__ R3
+    hashId: 110171750
     mesh: {fileID: -2432090755550338912, guid: 5b6f22e2bb26e3f47a24fe3aee7baf19, type: 3}
     rotation: 3
     sockets:
@@ -1707,8 +1695,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 17__ R1
-    hashId: -510269707
+  - name: 2__ R1
+    hashId: -1052628815
     mesh: {fileID: -2432090755550338912, guid: 38b829a654b8a174a881f7966de4e99b, type: 3}
     rotation: 1
     sockets:
@@ -1718,8 +1706,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 18__ R2
-    hashId: -698934647
+  - name: 2__ R2
+    hashId: -1455913342
     mesh: {fileID: -2432090755550338912, guid: 38b829a654b8a174a881f7966de4e99b, type: 3}
     rotation: 2
     sockets:
@@ -1729,8 +1717,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 19__ R3
-    hashId: -780004883
+  - name: 2__ R3
+    hashId: 110170599
     mesh: {fileID: -2432090755550338912, guid: 38b829a654b8a174a881f7966de4e99b, type: 3}
     rotation: 3
     sockets:
@@ -1740,8 +1728,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 20__ R1
-    hashId: -1347534575
+  - name: 3__ R1
+    hashId: -1052629838
     mesh: {fileID: -2432090755550338912, guid: 9e4b90ae550360c4298ed26e0d308fcd, type: 3}
     rotation: 1
     sockets:
@@ -1751,8 +1739,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 21__ R2
-    hashId: -1428604809
+  - name: 3__ R2
+    hashId: -1455914365
     mesh: {fileID: -2432090755550338912, guid: 9e4b90ae550360c4298ed26e0d308fcd, type: 3}
     rotation: 2
     sockets:
@@ -1762,8 +1750,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 22__ R3
-    hashId: -104956579
+  - name: 3__ R3
+    hashId: 110169576
     mesh: {fileID: -2432090755550338912, guid: 9e4b90ae550360c4298ed26e0d308fcd, type: 3}
     rotation: 3
     sockets:
@@ -1773,8 +1761,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 23__ R1
-    hashId: -186026816
+  - name: 4__ R1
+    hashId: -1052630733
     mesh: {fileID: -2432090755550338912, guid: 1825bf0fb6c549442ab752d182433771, type: 3}
     rotation: 1
     sockets:
@@ -1784,8 +1772,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 24__ R2
-    hashId: -1671815514
+  - name: 4__ R2
+    hashId: -1455915260
     mesh: {fileID: -2432090755550338912, guid: 1825bf0fb6c549442ab752d182433771, type: 3}
     rotation: 2
     sockets:
@@ -1795,8 +1783,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 25__ R3
-    hashId: -1752885748
+  - name: 4__ R3
+    hashId: 110168681
     mesh: {fileID: -2432090755550338912, guid: 1825bf0fb6c549442ab752d182433771, type: 3}
     rotation: 3
     sockets:
@@ -1806,8 +1794,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 26__ R1
-    hashId: -429237521
+  - name: 5__ R1
+    hashId: -1052631756
     mesh: {fileID: -2432090755550338912, guid: d01cf88cd43ca1a43ae052359d2ba6ce, type: 3}
     rotation: 1
     sockets:
@@ -1817,8 +1805,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 27__ R2
-    hashId: -510307755
+  - name: 5__ R2
+    hashId: -1455916283
     mesh: {fileID: -2432090755550338912, guid: d01cf88cd43ca1a43ae052359d2ba6ce, type: 3}
     rotation: 2
     sockets:
@@ -1828,8 +1816,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 28__ R3
-    hashId: -698972693
+  - name: 5__ R3
+    hashId: 110167658
     mesh: {fileID: -2432090755550338912, guid: d01cf88cd43ca1a43ae052359d2ba6ce, type: 3}
     rotation: 3
     sockets:
@@ -1839,8 +1827,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 29__ R1
-    hashId: -780042930
+  - name: 6__ R1
+    hashId: -1052632907
     mesh: {fileID: -2432090755550338912, guid: d63da2ce6d646f044b42a8db2da1fb4e, type: 3}
     rotation: 1
     sockets:
@@ -1850,8 +1838,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 30__ R2
-    hashId: -1347568397
+  - name: 6__ R2
+    hashId: -1455917434
     mesh: {fileID: -2432090755550338912, guid: d63da2ce6d646f044b42a8db2da1fb4e, type: 3}
     rotation: 2
     sockets:
@@ -1861,8 +1849,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 31__ R3
-    hashId: -1428638633
+  - name: 6__ R3
+    hashId: 110166507
     mesh: {fileID: -2432090755550338912, guid: d63da2ce6d646f044b42a8db2da1fb4e, type: 3}
     rotation: 3
     sockets:
@@ -1872,8 +1860,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 32__ R1
-    hashId: -104990406
+  - name: 7__ R1
+    hashId: -1052633930
     mesh: {fileID: -2432090755550338912, guid: 09c30327b91e12146aa1585505220c43, type: 3}
     rotation: 1
     sockets:
@@ -1883,8 +1871,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 33__ R2
-    hashId: -186060638
+  - name: 7__ R2
+    hashId: -1455918457
     mesh: {fileID: -2432090755550338912, guid: 09c30327b91e12146aa1585505220c43, type: 3}
     rotation: 2
     sockets:
@@ -1894,8 +1882,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 34__ R3
-    hashId: -1671849338
+  - name: 7__ R3
+    hashId: 110165484
     mesh: {fileID: -2432090755550338912, guid: 09c30327b91e12146aa1585505220c43, type: 3}
     rotation: 3
     sockets:
@@ -1905,41 +1893,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 35__ R1
-    hashId: -1752919575
-    mesh: {fileID: -2432090755550338912, guid: 558ba71787ad6df4583dc19a713824c1, type: 3}
-    rotation: 1
-    sockets:
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-  - name: 36__ R2
-    hashId: -429271343
-    mesh: {fileID: -2432090755550338912, guid: 558ba71787ad6df4583dc19a713824c1, type: 3}
-    rotation: 2
-    sockets:
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-  - name: 37__ R3
-    hashId: -510341579
-    mesh: {fileID: -2432090755550338912, guid: 558ba71787ad6df4583dc19a713824c1, type: 3}
-    rotation: 3
-    sockets:
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-  - name: 38__ R1
-    hashId: -699006520
+  - name: 8__ R1
+    hashId: -1052618457
     mesh: {fileID: -2432090755550338912, guid: 5320f2e999476ad4484d2c0585a9c946, type: 3}
     rotation: 1
     sockets:
@@ -1949,8 +1904,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 39__ R2
-    hashId: -780076752
+  - name: 8__ R2
+    hashId: -1455902984
     mesh: {fileID: -2432090755550338912, guid: 5320f2e999476ad4484d2c0585a9c946, type: 3}
     rotation: 2
     sockets:
@@ -1960,8 +1915,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 40__ R3
-    hashId: -1347597739
+  - name: 8__ R3
+    hashId: 110180957
     mesh: {fileID: -2432090755550338912, guid: 5320f2e999476ad4484d2c0585a9c946, type: 3}
     rotation: 3
     sockets:
@@ -1971,8 +1926,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 41__ R1
-    hashId: -1428667972
+  - name: 9__ R1
+    hashId: -1052619480
     mesh: {fileID: -2432090755550338912, guid: a8f65bfc54884bc429e26641834db5de, type: 3}
     rotation: 1
     sockets:
@@ -1982,8 +1937,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 42__ R2
-    hashId: -105019746
+  - name: 9__ R2
+    hashId: -1455904007
     mesh: {fileID: -2432090755550338912, guid: a8f65bfc54884bc429e26641834db5de, type: 3}
     rotation: 2
     sockets:
@@ -1993,8 +1948,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 43__ R3
-    hashId: -186089980
+  - name: 9__ R3
+    hashId: 110179934
     mesh: {fileID: -2432090755550338912, guid: a8f65bfc54884bc429e26641834db5de, type: 3}
     rotation: 3
     sockets:
@@ -2004,8 +1959,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 44__ R1
-    hashId: -1671878677
+  - name: 10__ R1
+    hashId: -1347496526
     mesh: {fileID: -2432090755550338912, guid: 729d458a6399acc44b43be29aee604d3, type: 3}
     rotation: 1
     sockets:
@@ -2015,8 +1970,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 45__ R2
-    hashId: -1752948915
+  - name: 10__ R2
+    hashId: -1347496527
     mesh: {fileID: -2432090755550338912, guid: 729d458a6399acc44b43be29aee604d3, type: 3}
     rotation: 2
     sockets:
@@ -2026,8 +1981,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 46__ R3
-    hashId: -429300685
+  - name: 10__ R3
+    hashId: -1347496528
     mesh: {fileID: -2432090755550338912, guid: 729d458a6399acc44b43be29aee604d3, type: 3}
     rotation: 3
     sockets:
@@ -2037,8 +1992,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 47__ R1
-    hashId: -510370918
+  - name: 11__ R1
+    hashId: -1428566761
     mesh: {fileID: -2432090755550338912, guid: bb1abdded187fb4419e166fe100496ff, type: 3}
     rotation: 1
     sockets:
@@ -2048,8 +2003,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 48__ R2
-    hashId: -699035860
+  - name: 11__ R2
+    hashId: -1428566762
     mesh: {fileID: -2432090755550338912, guid: bb1abdded187fb4419e166fe100496ff, type: 3}
     rotation: 2
     sockets:
@@ -2059,8 +2014,8 @@ MonoBehaviour:
     - 
     - 
     - 
-  - name: 49__ R3
-    hashId: -780106094
+  - name: 11__ R3
+    hashId: -1428566763
     mesh: {fileID: -2432090755550338912, guid: bb1abdded187fb4419e166fe100496ff, type: 3}
     rotation: 3
     sockets:
@@ -2090,7 +2045,6 @@ Transform:
   - {fileID: 1823816449}
   - {fileID: 638835164}
   - {fileID: 2113332063}
-  - {fileID: 1881893953}
   - {fileID: 1352532251}
   - {fileID: 2091697214}
   - {fileID: 1499107675}
@@ -2112,8 +2066,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 16
   offset: 2
-  x: 10
-  z: 2
+  x: 12
+  z: 6
 --- !u!1001 &1193141971
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2212,7 +2166,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 5b6f22e2bb26e3f47a24fe3aee7baf19,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5b6f22e2bb26e3f47a24fe3aee7baf19,
         type: 3}
@@ -2222,7 +2176,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 5b6f22e2bb26e3f47a24fe3aee7baf19,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5b6f22e2bb26e3f47a24fe3aee7baf19,
         type: 3}
@@ -2376,7 +2330,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1825bf0fb6c549442ab752d182433771,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1825bf0fb6c549442ab752d182433771,
         type: 3}
@@ -2386,7 +2340,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1825bf0fb6c549442ab752d182433771,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1825bf0fb6c549442ab752d182433771,
         type: 3}
@@ -2540,7 +2494,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 5320f2e999476ad4484d2c0585a9c946,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5320f2e999476ad4484d2c0585a9c946,
         type: 3}
@@ -2550,7 +2504,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 5320f2e999476ad4484d2c0585a9c946,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5320f2e999476ad4484d2c0585a9c946,
         type: 3}
@@ -2704,7 +2658,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 729d458a6399acc44b43be29aee604d3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 729d458a6399acc44b43be29aee604d3,
         type: 3}
@@ -2714,7 +2668,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 729d458a6399acc44b43be29aee604d3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 729d458a6399acc44b43be29aee604d3,
         type: 3}
@@ -3078,7 +3032,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbb8aee42cab7d34a9b87fc3fe7f4890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  socketCount: 16
   prototypes:
   - name: 0__ R0
     hashId: 1676256714
@@ -3261,7 +3214,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d01cf88cd43ca1a43ae052359d2ba6ce,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d01cf88cd43ca1a43ae052359d2ba6ce,
         type: 3}
@@ -3271,7 +3224,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: d01cf88cd43ca1a43ae052359d2ba6ce,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d01cf88cd43ca1a43ae052359d2ba6ce,
         type: 3}
@@ -3327,88 +3280,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1823816448}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &1881893952
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 2
-    m_TransformParent: {fileID: 1077938088}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_Name
-      value: Upper_Wall_001
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 558ba71787ad6df4583dc19a713824c1,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_AddedGameObjects: []
-  m_SourcePrefab: {fileID: 100100000, guid: 558ba71787ad6df4583dc19a713824c1, type: 3}
---- !u!4 &1881893953 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 558ba71787ad6df4583dc19a713824c1,
-    type: 3}
-  m_PrefabInstance: {fileID: 1881893952}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1900451845
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3425,7 +3296,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 38b829a654b8a174a881f7966de4e99b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 38b829a654b8a174a881f7966de4e99b,
         type: 3}
@@ -3435,7 +3306,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 38b829a654b8a174a881f7966de4e99b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 38b829a654b8a174a881f7966de4e99b,
         type: 3}
@@ -3589,7 +3460,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a8f65bfc54884bc429e26641834db5de,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a8f65bfc54884bc429e26641834db5de,
         type: 3}
@@ -3599,7 +3470,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: a8f65bfc54884bc429e26641834db5de,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a8f65bfc54884bc429e26641834db5de,
         type: 3}
@@ -3671,7 +3542,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 09c30327b91e12146aa1585505220c43,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 16
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 09c30327b91e12146aa1585505220c43,
         type: 3}
@@ -3681,7 +3552,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 09c30327b91e12146aa1585505220c43,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 09c30327b91e12146aa1585505220c43,
         type: 3}

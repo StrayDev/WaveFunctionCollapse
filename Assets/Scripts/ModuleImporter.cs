@@ -6,14 +6,19 @@ using UnityEngine;
 
 public class ModuleImporter : MonoBehaviour
 {
-    public int socketCount = 0;
-
-    public Dictionary<string, Vector3[]> sockets;
     public List<Prototype> prototypes;
 
-    private const int TopFace = 2;
-    private const int BottomFace = 3;
-    private const int FaceCount = 6;
+    public Dictionary<string, Vector3[]> sockets;
+
+    // face constants
+    private const int Front = 0;
+    private const int Back = 1;
+    private const int Left = 2;
+    private const int Right = 3;
+    private const int Top = 4; 
+    private const int Bottom = 5; 
+    
+    private const int NumFaces = 6;
     
     public void ImportModules()
     {
@@ -28,18 +33,32 @@ public class ModuleImporter : MonoBehaviour
 
         // keep track of uid for each socket
         var uid = 0;
-        
-        // register socket info -------------
+
+        // register socket info and create prototype modules
+        DefineSocketInformationFromMeshList(ref uid, meshList);
+
+        // create 3 rotations for each prototype
+        DefineRotationVariants(prototypes);
+
+        // define possible neighbours
+        //DefinePossibleNeighbours(prototypes);
+
+        // save as file
+        SaveTilesetToFile(prototypes);
+    }
+
+    private void DefineSocketInformationFromMeshList(ref int uid, Mesh[] meshList)
+    {
         foreach (var mesh in meshList)
         {
             var prototype = new Prototype($"{uid++}__", mesh, 0);
 
             // for each face
-            for (var i = 0; i < FaceCount; i++)
+            for (var i = 0; i < NumFaces; i++)
             {
                 // determine if horizontal or vertical face
-                var isVertical = i == TopFace || i == BottomFace;
-                
+                var isVertical = i == Top || i == Bottom;
+
                 // get socket vertices aligned to the x axis
                 var rotatedVertices = GetRotatedVertices(i, mesh.vertices);
                 var socketVertices = GetSocketVertices(rotatedVertices);
@@ -50,7 +69,7 @@ public class ModuleImporter : MonoBehaviour
                     prototype.sockets[i] = "-1";
                     continue;
                 }
-                
+
                 // check if socket already exists
                 if (SocketExists(socketVertices, isVertical, out var socket))
                 {
@@ -61,61 +80,140 @@ public class ModuleImporter : MonoBehaviour
                 prototype.sockets[i] = ProcessNewSocket(uid, isVertical, socketVertices);
             }
 
-            // store the prototype -------------
+            // store the prototype 
             prototypes.Add(prototype);
-        }
 
-        // create 3 rotations for each prototype
+            // create possible rotations
+        }
+    }
+
+    private void DefineRotationVariants(List<Prototype> prototypes)
+    {
         var variants = new List<Prototype>();
-        foreach (var prototype in prototypes)
+        foreach (var original in prototypes)
         {
-            // check all the side's arn't the same
-            var socket0 = prototype.sockets[0];
-            var sameFaces = 0;
-            for (var s = 1; s < FaceCount; s++)
-            {
-                // ignore the top
-                if(s == TopFace || s == BottomFace) continue;
-                if (socket0 != prototype.sockets[s]) break;
-                sameFaces++;
-            }
-            
-            // no need for variant if all sides are the same
-            if(sameFaces > 2) continue;
+            // skip if all the side faces are the same
+            if (AllSidesMatch(original)) continue;
 
             for (var i = 1; i < 4; i++)
             {
-                var variant = new Prototype($"{++uid}__", prototype.mesh, i);
+                var uid = ExtractUID(original.name);
+
+                var variant = new Prototype($"{uid}__", original.mesh, i);
+
+                // set the sockets based on the rotation
+                SetRotatedSockets(original, variant, i);
+
                 variants.Add(variant);
             }
         }
-        
+
         // add the rotation variants
         prototypes.AddRange(variants);
-        
-        // this is debug info < < < 
-        socketCount = sockets.Count;
-        
-        // define possible neighbours
-        foreach(var prototype in prototypes)
+    }
+
+    private void SetRotatedSockets(Prototype original, Prototype variant, int rotation)
+    {
+        switch(rotation)
+        {
+            case 1:
+                variant.sockets[Front] = original.sockets[Left];
+                variant.sockets[Left] = original.sockets[Back];
+                variant.sockets[Back] = original.sockets[Right];
+                variant.sockets[Right] = original.sockets[Front];
+                break;
+            case 2:
+                variant.sockets[Front] = original.sockets[Back];
+                variant.sockets[Left] = original.sockets[Right];
+                variant.sockets[Back] = original.sockets[Front];
+                variant.sockets[Right] = original.sockets[Left];
+                break;
+            case 3:
+                variant.sockets[Front] = original.sockets[Right];
+                variant.sockets[Left] = original.sockets[Front];
+                variant.sockets[Back] = original.sockets[Left];
+                variant.sockets[Right] = original.sockets[Back];
+                break;
+            default:
+                Debug.LogError("SetRotatedSockets() should only recieve a value between 1 & 3");
+                break;
+        }
+    }
+
+    private string ExtractUID(string name)
+    {
+        var uid = string.Empty;
+        foreach(char c in name)
+        {
+            if(char.IsDigit(c))
+            {
+                uid += c;
+                continue;
+            }
+            return uid;
+        }
+        Debug.LogError("Unable to extract UID from name");
+        return string.Empty;
+    }
+
+    private bool AllSidesMatch(Prototype prototype)
+    {
+        var socket0 = prototype.sockets[0];
+        var matchinFaces = 0;
+
+        // rotations 2 - 4
+        for (var s = 1; s < 4; s++) 
+        {
+            if (socket0 != prototype.sockets[s]) break;
+            matchinFaces++;
+        }
+
+        // no need for variant if all sides are the same
+        return matchinFaces > 2;
+    }
+
+    private void DefinePossibleNeighbours(List<Prototype> prototypes)
+    {
+        foreach (var prototype in prototypes)
         {
             // we check for each face
-            for(var i = 0; i < 6; i++)
+            for (var i = 0; i < 6; i++)
             {
                 // cycle through all of the other prototypes
                 foreach (var other in prototypes)
                 {
-                    var face = i;
-                    var otherFace = i % 2 < 0.1 ? i + 1 : i - 1;
-                    
+                    var otherFace = GetOtherFace(i);
+
                     // skip if no match 
-                    if (!prototype.sockets[face].Equals(other.sockets[otherFace])) continue;
-                    
+                    if (!prototype.sockets[i].Equals(other.sockets[otherFace])) continue;
+
                     // on match add to list of neighbors
-                    prototype.neighbors[face].Add(other.hashId);
+                    prototype.neighbors[i].Add(other.hashId);
                 }
             }
         }
+    }
+
+    private int GetOtherFace(int i)
+    {
+        switch(i)
+        {
+            case 0: return 1;
+            case 1: return 0;
+            case 2: return 3;
+            case 3: return 2;
+            case 4: return 5;
+            case 5: return 4;
+            default: 
+                Debug.LogError("GetOtherFace() should only take a value between 0 & 5");
+                return -1;
+        }
+    }
+
+    private void SaveTilesetToFile(List<Prototype> prototypes)
+    {
+        //
+
     }
 
     private bool SocketExists(Vector3[] socketVertices, bool isVertical, out string socket)
@@ -240,29 +338,29 @@ public class ModuleImporter : MonoBehaviour
 
         switch (face)
         {
-            case 0: // x +
-                foreach (var v in vertices) value.Add(new Vector3(v.z, v.y, -v.x));
-                break;
+            case Front: // no transform needed
+                return vertices;
 
-            case 1: // x -
-                foreach (var v in vertices) value.Add(new Vector3(-v.z, v.y, v.x));
-                break;
-
-            case TopFace: // y +
-                foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, -v.y));
-                break;
-
-            case BottomFace: // y -
-                // Note - dropped the inversion -v.z for matching with topface
-                foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, v.y));
-                break;
-
-            case 4: // z + back face
+            case Back: 
                 foreach (var v in vertices) value.Add(new Vector3(-v.x, v.y, -v.z));
                 break;
 
-            case 5: // z - front face
-                return vertices;
+            case Left: 
+                foreach (var v in vertices) value.Add(new Vector3(v.z, v.y, -v.x));
+                break;
+
+            case Right:
+                foreach (var v in vertices) value.Add(new Vector3(-v.z, v.y, v.x));
+                break;
+
+            case Top: 
+                foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, -v.y));
+                break;
+
+            case Bottom: 
+                // Note - dropped the inversion -v.z for matching with topface
+                foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, v.y));
+                break;                           
         }
 
         return value.ToArray();
@@ -297,12 +395,12 @@ public class ModuleImporter : MonoBehaviour
 
     private Vector3[] _offsetList =
     {
-        Offset * Vector3.right,
+        Offset * Vector3.forward,
+        Offset * Vector3.back,
         Offset * Vector3.left,
+        Offset * Vector3.right,
         Offset * Vector3.up,
         Offset * Vector3.down,
-        Offset * Vector3.forward,
-        Offset * Vector3.back
     };
     
     private void OnDrawGizmos()
