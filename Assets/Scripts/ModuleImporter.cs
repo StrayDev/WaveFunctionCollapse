@@ -11,32 +11,15 @@ public class ModuleImporter : MonoBehaviour
     public Dictionary<string, Vector3[]> sockets;
     public List<Prototype> prototypes;
 
-    [ContextMenu("Align to grid")]
-    public void AlignToGrid()
-    {
-        var width = 16;
-        var offset = 2;
-        var x = 0;
-        var z = 0;
-
-        foreach (Transform obj in transform)
-        {
-            if (x >= width)
-            {
-                x = 0;
-                z += offset;
-            }
-
-            x += offset;
-            obj.position = new Vector3(x, 0, z);
-        }
-    }
-
-    [ContextMenu("Import Modules")]
+    private const int TopFace = 2;
+    private const int BottomFace = 3;
+    private const int FaceCount = 6;
+    
     public void ImportModules()
     {
-        //debug = new List<Vector2Int>();
         sockets = new Dictionary<string, Vector3[]>();
+        sockets.Add("-1", new Vector3[1]);
+        
         prototypes = new List<Prototype>();
 
         // get all of the mesh filters
@@ -45,20 +28,22 @@ public class ModuleImporter : MonoBehaviour
 
         // keep track of uid for each socket
         var uid = 0;
-
+        
         // register socket info -------------
         foreach (var mesh in meshList)
         {
-            var prototype = new Prototype($"{uid}__", mesh, 0);
+            var prototype = new Prototype($"{uid++}__", mesh, 0);
 
             // for each face
-            for (var i = 0; i < 6; i++)
+            for (var i = 0; i < FaceCount; i++)
             {
+                // determine if horizontal or vertical face
+                var isVertical = i == TopFace || i == BottomFace;
+                
                 // get socket vertices aligned to the x axis
                 var rotatedVertices = GetRotatedVertices(i, mesh.vertices);
                 var socketVertices = GetSocketVertices(rotatedVertices);
 
-                
                 // set invalid for invalid / empty
                 if (socketVertices == null)
                 {
@@ -67,23 +52,50 @@ public class ModuleImporter : MonoBehaviour
                 }
                 
                 // check if socket already exists
-                if (SocketExists(socketVertices, out var socket))
+                if (SocketExists(socketVertices, isVertical, out var socket))
                 {
                     prototype.sockets[i] = socket;
                     continue;
                 }
 
-                prototype.sockets[i] = ProcessNewSocket(uid, socketVertices);
-                uid++;
+                prototype.sockets[i] = ProcessNewSocket(uid, isVertical, socketVertices);
             }
 
             // store the prototype -------------
             prototypes.Add(prototype);
         }
 
+        // create 3 rotations for each prototype
+        var variants = new List<Prototype>();
+        foreach (var prototype in prototypes)
+        {
+            // check all the side's arn't the same
+            var socket0 = prototype.sockets[0];
+            var sameFaces = 0;
+            for (var s = 1; s < FaceCount; s++)
+            {
+                // ignore the top
+                if(s == TopFace || s == BottomFace) continue;
+                if (socket0 != prototype.sockets[s]) break;
+                sameFaces++;
+            }
+            
+            // no need for variant if all sides are the same
+            if(sameFaces > 2) continue;
+
+            for (var i = 1; i < 4; i++)
+            {
+                var variant = new Prototype($"{++uid}__", prototype.mesh, i);
+                variants.Add(variant);
+            }
+        }
+        
+        // add the rotation variants
+        prototypes.AddRange(variants);
+        
+        // this is debug info < < < 
         socketCount = sockets.Count;
-
-
+        
         // define possible neighbours
         foreach(var prototype in prototypes)
         {
@@ -93,46 +105,47 @@ public class ModuleImporter : MonoBehaviour
                 // cycle through all of the other prototypes
                 foreach (var other in prototypes)
                 {
-                    // and each face
-                    for (var j = 0; j < 6; j++)
-                    {
-                        // skip if no match 
-                        if (!prototype.sockets[i].Equals(other.sockets[j])) continue;
-
-                        // on match add to list of neighbors
-                        prototype.neighbors[i].Add(other.hashId);
-                    }
+                    var face = i;
+                    var otherFace = i % 2 < 0.1 ? i + 1 : i - 1;
+                    
+                    // skip if no match 
+                    if (!prototype.sockets[face].Equals(other.sockets[otherFace])) continue;
+                    
+                    // on match add to list of neighbors
+                    prototype.neighbors[face].Add(other.hashId);
                 }
-
-
             }
         }
-        // for each prototype
-        // for each face 
-        // foreach prototype 
-
-
     }
 
-    private bool SocketExists(Vector3[] socketVertices, out string socket)
+    private bool SocketExists(Vector3[] socketVertices, bool isVertical, out string socket)
     {
         socket = string.Empty;
-        
+
         foreach (var kvp in sockets)
         {
             // check if number of verts is the same
             if (kvp.Value.Length != socketVertices.Length) continue;
 
+            // separates out the vertical and side faces
+            var keyContainsV = kvp.Key.Contains('v'); 
+            if (keyContainsV && !isVertical || !keyContainsV && isVertical) continue;
+
             // compare verts
+            var match = true;
             for(var i = 0; i < socketVertices.Length; i++)
             {
-                var is_same = socketVertices[i].x == kvp.Value[i].x;
-                if (is_same) continue;
+                if (kvp.Value.Contains(socketVertices[i])) continue;
+                match = false;
+                break;
             }
-
+            
             // all vertices are the same
-            socket = kvp.Key;
-            return true;
+            if (match)
+            {
+                socket = kvp.Key;
+                return true;
+            }
         }
 
         // no match found
@@ -149,40 +162,51 @@ public class ModuleImporter : MonoBehaviour
         return hash;
     }
 
-    private string ProcessNewSocket(int uid, Vector3[] socketVertices)
+    private string ProcessNewSocket(int uid, bool isVertical, Vector3[] socketVertices)
     {
         var socket = uid.ToString();
-
+        
+        // vertical sockets only care about rotation
+        if (isVertical)
+        {
+            sockets.Add(socket += "v", socketVertices);
+            return socket;
+        }
+        
         // check for symmetry
         if (IsSymmetrical(socketVertices, out var mirrorVertices))
         {
-            sockets.Add(socket += 's', socketVertices);
+            sockets.Add(socket += "s", socketVertices);
             return socket;
         }
 
-        sockets.Add(socket, socketVertices);
-        sockets.Add(socket + 'f', mirrorVertices);
+        sockets.Add(socket + "f", mirrorVertices);
+        sockets.Add(socket += "m", socketVertices);
         return socket;
     }
 
     private static bool IsSymmetrical(Vector3[] socketVertices, out Vector3[] mirrorVertices)
     {
-        // create a copy of the vertices
-        mirrorVertices = new Vector3[socketVertices.Length];
-        Array.Copy(socketVertices, mirrorVertices, socketVertices.Length);
+        var count = socketVertices.Length;
+        mirrorVertices = new Vector3[count];
 
-        // filp the vertices on the x axis
-        for (var i = 0; i < mirrorVertices.Length; i++)
+        // copy in reverse order
+        for (var i = 0; i < count; i++)
         {
-            mirrorVertices[i].x *= -1;
+            mirrorVertices[i] = socketVertices[count - 1 - i];
+            //mirrorVertices[i].x *= -1;
         }
 
         // check if al vertices are inverted pars
         for(var j = 0; j < socketVertices.Count(); j++)
         {
             // check if vertices are inverted pars
-            if (socketVertices[j].x != mirrorVertices[j].x)
+            if (Math.Abs(socketVertices[j].x - -mirrorVertices[j].x) > .0001)
             {
+                for(var v = 0; v < mirrorVertices.Length; v++)
+                {
+                    mirrorVertices[v].x *= -1;
+                }
                 return false;
             }
         }
@@ -224,21 +248,21 @@ public class ModuleImporter : MonoBehaviour
                 foreach (var v in vertices) value.Add(new Vector3(-v.z, v.y, v.x));
                 break;
 
-            case 2: // y +
+            case TopFace: // y +
                 foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, -v.y));
                 break;
 
-            case 3: // y -
-                foreach (var v in vertices) value.Add(new Vector3(v.x, -v.z, v.y));
+            case BottomFace: // y -
+                // Note - dropped the inversion -v.z for matching with topface
+                foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, v.y));
                 break;
 
-            case 4: // z +
-                foreach (var v in vertices) value.Add(new Vector3(v.x, v.y, -v.z));
+            case 4: // z + back face
+                foreach (var v in vertices) value.Add(new Vector3(-v.x, v.y, -v.z));
                 break;
 
-            case 5: // z -
+            case 5: // z - front face
                 return vertices;
-                
         }
 
         return value.ToArray();
@@ -257,7 +281,7 @@ public class ModuleImporter : MonoBehaviour
 
     // Source
     // https://www.cuemath.com/questions/how-to-rotate-a-figure-90-degrees-clockwise-about-a-point/
-    private Vector3[] RotateVertices90Degrees(Vector3[] vertices)
+    private Vector3[] RotateVertices90Degrees(ref Vector3[] vertices)
     {
         for (var i = 0; i < vertices.Length; i++)
         {
@@ -284,9 +308,11 @@ public class ModuleImporter : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (prototypes.Count < 1) return;
-
+        
         var renderers = GetComponentsInChildren<MeshRenderer>();
-
+        
+        if (prototypes.Count < renderers.Length) return;
+            
         for (var r = 0; r < renderers.Length; r++)
         {
             var p = prototypes[r];
