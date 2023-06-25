@@ -17,11 +17,13 @@ public class TileSet
 [System.Serializable]
 public class Module
 {
+    public Module() { } // dny buy this prevents errors in the values
+
     public Module(string name, int rotation, MeshData meshData)
     {
         this.name = name + " R" + rotation;
         this.rotation = rotation;
-        hash = name.GetHashCode();
+        hash = this.name.GetHashCode();
 
         this.meshData = meshData;
     }

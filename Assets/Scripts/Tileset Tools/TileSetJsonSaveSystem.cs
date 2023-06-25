@@ -32,6 +32,8 @@ public class TileSetJsonSaveSystem : MonoBehaviour
 
         var json = File.ReadAllText(filepath);
 
+        tileSetAsset.tileset.modules.Clear();
+
         tileSetAsset.tileset = Newtonsoft.Json.JsonConvert.DeserializeObject<TileSet>(json);
 
         Debug.Log($"Loaded Tileset from : {filepath} ");
