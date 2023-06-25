@@ -17,6 +17,8 @@ public class ChunkTerrain : MonoBehaviour
 
     private Dictionary<int, Module> modules;
 
+    [SerializeField] private Material material;
+
     void Start()
     {
         // cash the tileset
@@ -71,6 +73,52 @@ public class ChunkTerrain : MonoBehaviour
 
         Debug.Log("Generation Complete");
 
+        Vector3[] vertices;
+        Vector3[] normals;
+        int[] triangles;
+
+        for(var i = 0; i < chunk.cells.Length; i++)
+        {
+            var hash = wave.possibleStates[i][0];
+            var meshdata = modules[hash].meshData;
+
+            ConvertMeshData(meshdata, out vertices, out triangles, out normals);
+
+            var go = new GameObject();
+
+            go.transform.position = chunk.cells[i].center;
+
+            var r = go.AddComponent<MeshRenderer>();
+
+            r.material = material;
+
+            var f = go.AddComponent<MeshFilter>();
+
+            f.mesh = new Mesh();
+            f.mesh.vertices = vertices;
+            f.mesh.triangles = triangles;
+            f.mesh.normals = normals;
+            f.mesh.RecalculateNormals();
+        }
+    }
+
+    // this function needs to be moved or the conversion should be done at load time
+    private void ConvertMeshData(MeshData meshdata, out Vector3[] vertices, out int[] triangles, out Vector3[] normals)
+    {
+        normals = new Vector3[meshdata.normals.Length];
+        vertices = new Vector3[meshdata.vertices.Length];
+        triangles = new int[meshdata.triangles.Length];
+
+        for(int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = new Vector3(meshdata.vertices[i].x, meshdata.vertices[i].y, meshdata.vertices[i].z);
+            normals[i] = new Vector3(meshdata.normals[i].x, meshdata.normals[i].y, meshdata.normals[i].z);
+        }
+
+        for (int i = 0; i < triangles.Length; i++)
+        {
+            triangles[i] = meshdata.triangles[i];
+        }
     }
 
     private int SelectState(List<int> possibleStates)

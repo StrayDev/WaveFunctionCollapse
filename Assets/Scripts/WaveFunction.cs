@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class WaveFunction
 {
-    private List<int>[] possibleStates;
+    public List<int>[] possibleStates;
     private bool[] collapsed;
 
     private readonly int MaxIndex;
