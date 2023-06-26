@@ -8,7 +8,7 @@ using UnityEngine;
 public class WaveFunction
 {
     public List<int>[] possibleStates;
-    private bool[] collapsed;
+    public bool[] collapsed;
 
     private readonly int MaxIndex;
     private readonly int NumCells;
@@ -45,6 +45,8 @@ public class WaveFunction
         collapsed[index] = true;
     }
 
+    private int tempIndex;
+
     public int SelectCellToCollapse()
     {
         // need to find the lowest entropy 
@@ -54,7 +56,14 @@ public class WaveFunction
         }
 
         // otherwise random  
-        return Random.Range(0, MaxIndex);
+        tempIndex = -1;
+        while (true)
+        {
+            tempIndex = Random.Range(0, MaxIndex);
+            if (!collapsed[tempIndex]) return tempIndex;
+        }
+
+
     }
 
     private bool TryGetLowestEnropyIndex(out int index)

@@ -12,7 +12,7 @@ using UnityEngine;
 public class Chunk
 {
     // Static Constants
-    public static readonly Vector3 Bounds = Vector3.one * 16;
+    public static readonly Vector3 Bounds = new Vector3(4,1,4);//Vector3.one * 16;
     public static readonly Vector3 Extents = Bounds / 2;
 
     private static int Width  => (int)Bounds.x;
