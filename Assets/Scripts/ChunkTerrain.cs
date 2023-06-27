@@ -50,13 +50,9 @@ public class ChunkTerrain : MonoBehaviour
         var index = 0;
         var state = 0;
 
-        var count = 0;
-
         // Loop until wave function collapses
         while (!wave.IsCollapsed())
         {
-            count++;
-
             // get the cell and state info
             index = wave.SelectCellToCollapse();
 

@@ -11,21 +11,29 @@ public class ModuleImporter : MonoBehaviour
 
     public Dictionary<string, Vector3[]> sockets;
 
+    public Dictionary<string, string> socketPairMap = new Dictionary<string, string>();
+    private int _airHash;
+
     // face constants
     private const int Front = 0;
     private const int Back = 1;
     private const int Left = 2;
     private const int Right = 3;
-    private const int Top = 4; 
-    private const int Bottom = 5; 
-    
+    private const int Top = 4;
+    private const int Bottom = 5;
+
     private const int NumFaces = 6;
-    
+
     public void ImportModules()
     {
         sockets = new Dictionary<string, Vector3[]>();
         sockets.Add("-1", new Vector3[1]);
-        
+
+        socketPairMap.Clear();
+
+        so.tileset.modules.Clear();
+        AddAirModule(so.tileset);
+
         // get all of the mesh filters
         var meshFilterList = GetComponentsInChildren<MeshFilter>();
         var meshList = GetMeshList(meshFilterList);
@@ -82,7 +90,7 @@ public class ModuleImporter : MonoBehaviour
                 }
 
                 var newSocket = ProcessNewSocket(uid, isVertical, socketVertices);
-                module.sockets.Add(newSocket); 
+                module.sockets.Add(newSocket);
             }
 
             // store the prototype 
@@ -91,19 +99,40 @@ public class ModuleImporter : MonoBehaviour
         }
     }
 
+    private void AddAirModule(TileSet tileset)
+    {
+        var module = new Module("Air", 0, null);
+        for (int i = 0; i < 6; i++)
+        {
+            module.sockets.Add("-1");
+        }
+        tileset.modules.Add(module);
+        _airHash = module.hash;
+    }
+
     private void DefineRotationVariants(TileSet tileset)
     {
         var variants = new List<Module>();
+
         foreach (var original in tileset.modules)
         {
             // skip if all the side faces are the same
             if (AllSidesMatch(original)) continue;
 
+            // copy the original mesh data
+            var rotatedMeshData = new MeshData
+            {
+                vertices = original.meshData.vertices,
+                normals = original.meshData.normals,
+                triangles = original.meshData.triangles,
+            };
+
             for (var i = 1; i < 4; i++)
             {
                 var uid = ExtractUID(original.name);
 
-                var variant = new Module($"{uid}__", i, original.meshData);
+                rotatedMeshData = RotateMeshData(rotatedMeshData);
+                var variant = new Module($"{uid}__", i, rotatedMeshData);
 
                 // set the sockets based on the rotation
                 SetRotatedSockets(original, ref variant, i);
@@ -114,6 +143,27 @@ public class ModuleImporter : MonoBehaviour
 
         // add the rotation variants
         tileset.modules.AddRange(variants);
+    }
+
+    private MeshData RotateMeshData(MeshData meshData)
+    {
+        var m = meshData;
+
+        var vertices = new SerializableVector3[meshData.vertices.Length];
+        var normals = new SerializableVector3[meshData.normals.Length];
+
+        for (var i = 0; i < meshData.vertices.Count(); i++)
+        {
+            vertices[i] = new SerializableVector3(m.vertices[i].z, m.vertices[i].y, -m.vertices[i].x);
+            normals[i] = new SerializableVector3(m.normals[i].z, m.normals[i].y, -m.normals[i].x);
+        }
+
+        return new MeshData
+        {
+            vertices = vertices,
+            normals = normals,
+            triangles = meshData.triangles,
+        };
     }
 
     private void SetRotatedSockets(Module original, ref Module variant, int rotation)
@@ -128,7 +178,7 @@ public class ModuleImporter : MonoBehaviour
         variant.sockets[Bottom] = original.sockets[Bottom];
 
         // rotate sides
-        switch(rotation)
+        switch (rotation)
         {
             case 1:
                 variant.sockets[Front] = original.sockets[Left];
@@ -157,9 +207,9 @@ public class ModuleImporter : MonoBehaviour
     private string ExtractUID(string name)
     {
         var uid = string.Empty;
-        foreach(char c in name)
+        foreach (char c in name)
         {
-            if(char.IsDigit(c))
+            if (char.IsDigit(c))
             {
                 uid += c;
                 continue;
@@ -176,7 +226,7 @@ public class ModuleImporter : MonoBehaviour
         var matchinFaces = 0;
 
         // rotations 2 - 4
-        for (var s = 1; s < 4; s++) 
+        for (var s = 1; s < 4; s++)
         {
             if (socket0 != module.sockets[s]) break;
             matchinFaces++;
@@ -192,8 +242,15 @@ public class ModuleImporter : MonoBehaviour
         {
 
             // we check for each face
-            for (var i = 0; i < 6; i++)
+            for (var i = 0; i < NumFaces; i++)
             {
+                // special case for air tile
+                if (module.sockets[i] == "-1")
+                {
+                    module.neigbours[i].Add(_airHash);
+                    continue;
+                }
+
                 // cycle through all of the other prototypes
                 foreach (var other in tileset.modules)
                 {
@@ -202,8 +259,25 @@ public class ModuleImporter : MonoBehaviour
                     // dont repeat neighbours
                     if (module.neigbours[i].Contains(other.hash)) continue;
 
-                    // skip if no match 
-                    if (!module.sockets[i].Equals(other.sockets[otherFace])) continue;
+                    // skip if no match or
+                    var doesNotMatch = !module.sockets[i].Equals(other.sockets[otherFace]);
+
+                    // filter for m == f sockets
+                    var isPaired = socketPairMap.ContainsKey(module.sockets[i]);
+                    var isNotPairedToOther = false;
+                    
+                    if(isPaired)
+                    {
+                        var value = socketPairMap[module.sockets[i]];
+                        isNotPairedToOther = value != other.sockets[otherFace];
+                    }
+
+                    var isVertical = (i == Top || i == Bottom);
+
+                    if (doesNotMatch && isNotPairedToOther && !isPaired && !isVertical) continue;
+
+                    // top and bottom rotation needs to match 
+                    if (isVertical && module.rotation != other.rotation) continue;
 
                     // on match add to list of neighbors
                     module.neigbours[i].Add(other.hash);
@@ -214,7 +288,7 @@ public class ModuleImporter : MonoBehaviour
 
     private int GetOtherFace(int i)
     {
-        switch(i)
+        switch (i)
         {
             case 0: return 1;
             case 1: return 0;
@@ -222,7 +296,7 @@ public class ModuleImporter : MonoBehaviour
             case 3: return 2;
             case 4: return 5;
             case 5: return 4;
-            default: 
+            default:
                 Debug.LogError("GetOtherFace() should only take a value between 0 & 5");
                 return -1;
         }
@@ -238,18 +312,18 @@ public class ModuleImporter : MonoBehaviour
             if (kvp.Value.Length != socketVertices.Length) continue;
 
             // separates out the vertical and side faces
-            var keyContainsV = kvp.Key.Contains('v'); 
+            var keyContainsV = kvp.Key.Contains('v');
             if (keyContainsV && !isVertical || !keyContainsV && isVertical) continue;
 
             // compare verts
             var match = true;
-            for(var i = 0; i < socketVertices.Length; i++)
+            for (var i = 0; i < socketVertices.Length; i++)
             {
                 if (kvp.Value.Contains(socketVertices[i])) continue;
                 match = false;
                 break;
             }
-            
+
             // all vertices are the same
             if (match)
             {
@@ -275,20 +349,23 @@ public class ModuleImporter : MonoBehaviour
     private string ProcessNewSocket(int uid, bool isVertical, Vector3[] socketVertices)
     {
         var socket = uid.ToString();
-        
+
         // vertical sockets only care about rotation
         if (isVertical)
         {
             sockets.Add(socket += "v", socketVertices);
             return socket;
         }
-        
+
         // check for symmetry
         if (IsSymmetrical(socketVertices, out var mirrorVertices))
         {
             sockets.Add(socket += "s", socketVertices);
             return socket;
         }
+
+        socketPairMap.Add(socket + "f", socket + "m");
+        socketPairMap.Add(socket + "m", socket + "f");
 
         sockets.Add(socket + "f", mirrorVertices);
         sockets.Add(socket += "m", socketVertices);
@@ -307,12 +384,12 @@ public class ModuleImporter : MonoBehaviour
         }
 
         // check if al vertices are inverted pars
-        for(var j = 0; j < socketVertices.Count(); j++)
+        for (var j = 0; j < socketVertices.Count(); j++)
         {
             // check if vertices are inverted pars
             if (Math.Abs(socketVertices[j].x - -mirrorVertices[j].x) > .0001)
             {
-                for(var v = 0; v < mirrorVertices.Length; v++)
+                for (var v = 0; v < mirrorVertices.Length; v++)
                 {
                     mirrorVertices[v].x *= -1;
                 }
@@ -334,7 +411,7 @@ public class ModuleImporter : MonoBehaviour
         }
 
         if (value.Count == 0) return null;
-        
+
         value.Reverse();
         return value.ToArray();
     }
@@ -349,11 +426,11 @@ public class ModuleImporter : MonoBehaviour
             case Back: // no transform needed
                 return vertices;
 
-            case Front: 
+            case Front:
                 foreach (var v in vertices) value.Add(new Vector3(-v.x, v.y, -v.z));
                 break;
 
-            case Right: 
+            case Right:
                 foreach (var v in vertices) value.Add(new Vector3(v.z, v.y, -v.x));
                 break;
 
@@ -361,14 +438,14 @@ public class ModuleImporter : MonoBehaviour
                 foreach (var v in vertices) value.Add(new Vector3(-v.z, v.y, v.x));
                 break;
 
-            case Top: 
+            case Top:
                 foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, -v.y));
                 break;
 
-            case Bottom: 
+            case Bottom:
                 // Note - dropped the inversion -v.z for matching with topface
                 foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, v.y));
-                break;                           
+                break;
         }
 
         return value.ToArray();
@@ -397,7 +474,7 @@ public class ModuleImporter : MonoBehaviour
 
         return vertices;
     }
-    
+
     // Gizmos
     private const float Offset = 0.7f;
 
@@ -410,24 +487,25 @@ public class ModuleImporter : MonoBehaviour
         Offset * Vector3.up,
         Offset * Vector3.down,
     };
-    
+
     private void OnDrawGizmos()
     {
-        if(!so) return;
+        if (!so) return;
         if (so.tileset.modules.Count < 1) return;
-        
+
         var renderers = GetComponentsInChildren<MeshRenderer>();
-        
+
         if (so.tileset.modules.Count < renderers.Length) return;
-            
+
+        // 1 skips the air block
         for (var r = 0; r < renderers.Length; r++)
         {
-            var p = so.tileset.modules[r];
+            var p = so.tileset.modules[r+1];
             var t = renderers[r].transform;
 
             Handles.color = Color.white;
             Handles.DrawWireCube(t.position, Vector3.one);
-            
+
             for (var i = 0; i < 6; i++)
             {
                 Handles.Label(t.position + _offsetList[i], p.sockets[i]);

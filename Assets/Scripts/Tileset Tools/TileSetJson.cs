@@ -119,6 +119,14 @@ public class SerializableVector3
         y = vector3.y;
         z = vector3.z;
     }
+
+    public SerializableVector3(float _x, float _y, float _z)
+    {
+        x = _x;
+        y = _y;
+        z = _z;
+    }
+
     public Vector3 ToVector3()
     {
         return new Vector3(x, y, z);
