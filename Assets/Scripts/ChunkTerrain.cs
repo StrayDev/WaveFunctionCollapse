@@ -53,6 +53,7 @@ public class ChunkTerrain : MonoBehaviour
         // Loop until wave function collapses
         while (!wave.IsCollapsed())
         {
+
             // get the cell and state info
             index = wave.SelectCellToCollapse();
 
