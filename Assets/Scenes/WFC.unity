@@ -367,6 +367,7 @@ GameObject:
   - component: {fileID: 574093778}
   - component: {fileID: 574093780}
   - component: {fileID: 574093779}
+  - component: {fileID: 574093781}
   m_Layer: 0
   m_Name: Chunk
   m_TagString: Untagged
@@ -396,7 +397,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 574093777}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d82effb2eda8dfe4aac2232d9391fd94, type: 3}
   m_Name: 
@@ -419,6 +420,19 @@ MonoBehaviour:
   FileName: DefaultTileset
   CustomDirectory: D:\WaveFunctionCollapse\Assets\Json
   UseCustomFilePath: 1
+--- !u!114 &574093781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 574093777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b93ba0744bc896b4ba4e6a0175cb6ff5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileSetAsset: {fileID: 11400000, guid: 780d2002aa6de6c4883f0f568e38902e, type: 2}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

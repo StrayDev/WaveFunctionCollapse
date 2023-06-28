@@ -55,13 +55,7 @@ public class WaveFunction
             return index;
         }
 
-        // otherwise random  
-        tempIndex = -1;
-        while (true)
-        {
-            tempIndex = Random.Range(0, MaxIndex);
-            if (!collapsed[tempIndex]) return tempIndex;
-        }
+        return 0;
     }
 
     private bool TryGetLowestEnropyIndex(out int index)

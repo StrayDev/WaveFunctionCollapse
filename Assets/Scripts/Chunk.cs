@@ -12,14 +12,14 @@ using UnityEngine;
 public class Chunk
 {
     // Static Constants
-    public static readonly Vector3 Bounds = new Vector3(2,1,2);//Vector3.one * 16;
+    public static readonly Vector3 Bounds = new Vector3(16,1,1);//Vector3.one * 16;
     public static readonly Vector3 Extents = Bounds / 2;
 
     private static int Width  => (int)Bounds.x;
     private static int Height => (int)Bounds.y;
     private static int Depth  => (int)Bounds.z;
     
-    private static readonly int CellCount = (int)(Bounds.x * Bounds.y * Bounds.z);
+    public static readonly int CellCount = (int)(Bounds.x * Bounds.y * Bounds.z);
        
     // Constants
     public readonly Vector3 center;

@@ -2,6 +2,7 @@
 // System
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // Unity
 using UnityEngine;
@@ -33,6 +34,7 @@ public class ChunkTerrain : MonoBehaviour
 
         // eventually we will have this called on the correct chunk
         var chunk = new Chunk(Vector3.zero);
+        
         WFCNewChunkGeneration(chunk, tileset);
     }
 
@@ -53,7 +55,6 @@ public class ChunkTerrain : MonoBehaviour
         // Loop until wave function collapses
         while (!wave.IsCollapsed())
         {
-
             // get the cell and state info
             index = wave.SelectCellToCollapse();
 
