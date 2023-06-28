@@ -76,6 +76,8 @@ public class ChunkTerrain : MonoBehaviour
 
         for(var i = 0; i < chunk.cells.Length; i++)
         {
+            if (wave.possibleStates[i] == null) continue;
+
             var hash = wave.possibleStates[i][0];
             var module = modules[hash];
             var meshdata = modules[hash].meshData;
@@ -85,7 +87,6 @@ public class ChunkTerrain : MonoBehaviour
             var go = new GameObject($"Cell {i}");
 
             go.transform.position = chunk.cells[i].center;
-            go.transform.rotation = Quaternion.Euler(0, module.rotation * 90, 0);
 
             var r = go.AddComponent<MeshRenderer>();
 
