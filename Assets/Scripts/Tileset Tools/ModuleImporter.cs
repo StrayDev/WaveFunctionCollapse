@@ -79,6 +79,18 @@ public class ModuleImporter : MonoBehaviour
                 // check if socket already exists
                 if (SocketExists(socketVertices, isVertical, out var socket))
                 {
+                    // check that m <--> f relation is correct
+                    if(socketPairMap.ContainsKey(socket))
+                    {
+                        var isMale = socket.Contains('m');
+                        var shouldBeMale = (i == Front || i == Left);
+
+                        if((!isMale && shouldBeMale || isMale && !shouldBeMale))
+                        {
+                            socket = socketPairMap[socket];
+                        } 
+                    }
+
                     module.sockets.Add(socket);
                     continue;
                 }
@@ -90,6 +102,19 @@ public class ModuleImporter : MonoBehaviour
                 }
 
                 var newSocket = ProcessNewSocket(uid, isVertical, socketVertices);
+
+                //
+                if (socketPairMap.ContainsKey(newSocket))
+                {
+                    var isMale = socket.Contains('m');
+                    var shouldBeMale = (i == Front || i == Left);
+
+                    if ((!isMale && shouldBeMale || isMale && !shouldBeMale))
+                    {
+                        newSocket = socketPairMap[newSocket];
+                    }
+                }
+
                 module.sockets.Add(newSocket);
             }
 
@@ -259,24 +284,30 @@ public class ModuleImporter : MonoBehaviour
                     // dont repeat neighbours
                     if (module.neigbours[i].Contains(other.hash)) continue;
 
-                    // skip if no match or
-                    var doesNotMatch = !module.sockets[i].Equals(other.sockets[otherFace]);
-
                     // filter for m == f sockets
                     var isPaired = socketPairMap.ContainsKey(module.sockets[i]);
-                    var isNotPairedToOther = false;
+                    var isNotPairedToOther = true;
                     
                     if(isPaired)
                     {
                         var value = socketPairMap[module.sockets[i]];
                         isNotPairedToOther = value != other.sockets[otherFace];
+                    
+                        // Filter out non matching pairs
+                        if (isNotPairedToOther) continue;
+
+                        // on match add to list of neighbors
+                        module.neigbours[i].Add(other.hash);
+                        continue;
                     }
 
-                    var isVertical = (i == Top || i == Bottom);
-
-                    if (doesNotMatch && isNotPairedToOther && !isPaired && !isVertical) continue;
+                    // filter out mismatches when not in m <-> f relationship
+                    // skip if no match or
+                    var doesNotMatch = !module.sockets[i].Equals(other.sockets[otherFace]);
+                    if (doesNotMatch) continue;
 
                     // top and bottom rotation needs to match 
+                    var isVertical = (i == Top || i == Bottom);
                     if (isVertical && module.rotation != other.rotation) continue;
 
                     // on match add to list of neighbors
@@ -364,11 +395,11 @@ public class ModuleImporter : MonoBehaviour
             return socket;
         }
 
-        socketPairMap.Add(socket + "f", socket + "m");
         socketPairMap.Add(socket + "m", socket + "f");
+        socketPairMap.Add(socket + "f", socket + "m");
 
-        sockets.Add(socket + "f", mirrorVertices);
-        sockets.Add(socket += "m", socketVertices);
+        sockets.Add(socket + "m", mirrorVertices);
+        sockets.Add(socket += "f", socketVertices);
         return socket;
     }
 
@@ -383,7 +414,7 @@ public class ModuleImporter : MonoBehaviour
             mirrorVertices[i] = socketVertices[count - 1 - i];
         }
 
-        // check if al vertices are inverted pars
+        // check if all vertices are inverted pars
         for (var j = 0; j < socketVertices.Count(); j++)
         {
             // check if vertices are inverted pars
@@ -396,6 +427,17 @@ public class ModuleImporter : MonoBehaviour
                 return false;
             }
         }
+
+        // check if all vertices are in a strait vertacle line
+        var matchingCount = 0;
+        for(var k = 0; k < socketVertices.Length; k++)
+        {
+            if (socketVertices[0].x != socketVertices[k].x) continue;
+            matchingCount++;
+        }
+
+        if (matchingCount == socketVertices.Length) return false;
+
         return true;
     }
 
