@@ -3,10 +3,7 @@ using UnityEngine;
 
 public class AlignToGridTool : MonoBehaviour
 {
-    [SerializeField] private float width = 8;
     [SerializeField] private float offset = 2;
-    [SerializeField] private float x = 0;
-    [SerializeField] private float z = 0;
 
     public void AlignToGrid()
     {

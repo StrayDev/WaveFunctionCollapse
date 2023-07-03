@@ -19,19 +19,22 @@ public class ModuleImporter : MonoBehaviour
     private const int Back = 1;
     private const int Left = 2;
     private const int Right = 3;
-    private const int Top = 4;
-    private const int Bottom = 5;
+    private const int Up = 4;
+    private const int Down = 5;
 
     private const int NumFaces = 6;
 
     public void ImportModules()
     {
         sockets = new Dictionary<string, Vector3[]>();
+        sockets.Clear();
+
         sockets.Add("-1", new Vector3[1]);
 
         socketPairMap.Clear();
 
         so.tileset.modules.Clear();
+
         AddAirModule(so.tileset);
 
         // get all of the mesh filters
@@ -44,10 +47,20 @@ public class ModuleImporter : MonoBehaviour
         // create 3 rotations for each prototype
         DefineRotationVariants(so.tileset);
 
+        // hack for error in import 
+        // < < < This will need to be fixed
+        for(var i = 0; i < so.tileset.modules.Count; i++)
+        {
+            if (so.tileset.modules[i].name.Contains("10"))
+            {
+                so.tileset.modules[i].sockets[Down] = "v2";
+            }
+        }
+
         // define possible neighbours
         DefinePossibleNeighbours(so.tileset);
 
-        Debug.Log($"Modules Imported to {so.tileset.assetName}");
+        Debug.Log($"Modules Imported to : Scriptable Data - {so.tileset.assetName}");
     }
 
     private void DefineSocketInformationFromMeshList(Mesh[] meshList, TileSet tileset)
@@ -63,7 +76,7 @@ public class ModuleImporter : MonoBehaviour
             for (var i = 0; i < NumFaces; i++)
             {
                 // determine if horizontal or vertical face
-                var isVertical = i == Top || i == Bottom;
+                var isVertical = i == Up || i == Down;
 
                 // get socket vertices aligned to the x axis
                 var rotatedVertices = GetRotatedVertices(i, mesh.vertices);
@@ -199,8 +212,8 @@ public class ModuleImporter : MonoBehaviour
         };
 
         // add top and bottom
-        variant.sockets[Top] = original.sockets[Top];
-        variant.sockets[Bottom] = original.sockets[Bottom];
+        variant.sockets[Up] = original.sockets[Up];
+        variant.sockets[Down] = original.sockets[Down];
 
         // rotate sides
         switch (rotation)
@@ -307,7 +320,7 @@ public class ModuleImporter : MonoBehaviour
                     if (doesNotMatch) continue;
 
                     // top and bottom rotation needs to match 
-                    var isVertical = (i == Top || i == Bottom);
+                    var isVertical = (i == Up || i == Down);
                     if (isVertical && module.rotation != other.rotation) continue;
 
                     // on match add to list of neighbors
@@ -346,11 +359,20 @@ public class ModuleImporter : MonoBehaviour
             var keyContainsV = kvp.Key.Contains('v');
             if (keyContainsV && !isVertical || !keyContainsV && isVertical) continue;
 
+            // get rotated vertices if verticle
+            var rotatedSocketVertices = new Vector3[socketVertices.Length];
+
+            if(isVertical)
+            {
+                rotatedSocketVertices = GetVerticleRotatedVertices(socketVertices);
+            }
+
             // compare verts
             var match = true;
             for (var i = 0; i < socketVertices.Length; i++)
             {
                 if (kvp.Value.Contains(socketVertices[i])) continue;
+
                 match = false;
                 break;
             }
@@ -365,6 +387,18 @@ public class ModuleImporter : MonoBehaviour
 
         // no match found
         return false;
+    }
+
+    private Vector3[] GetVerticleRotatedVertices(Vector3[] sv)
+    {
+        var value = new Vector3[sv.Length];
+
+        for(var i = 0;i < sv.Length;i++)
+        {
+            value[i] = new Vector3(-sv[i].z, sv[i].y, sv[i].x); 
+        }
+
+        return value;
     }
 
     private int GetHashFromArray(Vector3[] array)
@@ -480,11 +514,11 @@ public class ModuleImporter : MonoBehaviour
                 foreach (var v in vertices) value.Add(new Vector3(-v.z, v.y, v.x));
                 break;
 
-            case Top:
+            case Up:
                 foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, -v.y));
                 break;
 
-            case Bottom:
+            case Down:
                 // Note - dropped the inversion -v.z for matching with topface
                 foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, v.y));
                 break;
