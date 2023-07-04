@@ -12,7 +12,7 @@ using UnityEngine;
 public class Chunk
 {
     // Static Constants
-    public static readonly Vector3 Bounds = new Vector3(16,1,1);//Vector3.one * 16;
+    public static readonly Vector3 Bounds = Vector3.one * 16;
     public static readonly Vector3 Extents = Bounds / 2;
 
     private static int Width  => (int)Bounds.x;
@@ -103,4 +103,42 @@ public class Chunk
         x = idx % Width;
     }
 
+    public static List<int> GetNeighboursByIndex(int index)
+    {
+        var value = new List<int>();
+
+        int x = index % Width;
+        int y = (index / Width) % Height;
+        int z = index / (Width * Height);
+
+        // Add neighbors, considering chunk boundaries
+        if (x > 0) value.Add(index - 1); // Left neighbor
+        else value.Add(-1);
+
+        if (x < Width - 1) value.Add(index + 1); // Right neighbor
+        else value.Add(-1);
+
+        if (z < Depth - 1) value.Add(index + Width * Height); // Front neighbor
+        else value.Add(-1);
+
+        if (z > 0) value.Add(index - Width * Height); // Back neighbor
+        else value.Add(-1);
+
+        if (y < Height - 1) value.Add(index + Width); // Top neighbor
+        else value.Add(-1);
+
+        if (y > 0) value.Add(index - Width); // Bottom neighbor
+        else value.Add(-1);
+
+        return value;
+    }
+
+    internal static Vector3 GetCellPositionByIndex(int index)
+    {
+        var x = index % Width;
+        var y = (index / Width) % Height;
+        var z = index / (Width * Height);
+
+        return new Vector3(x, y, z);
+    }
 }

@@ -433,6 +433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileSetAsset: {fileID: 11400000, guid: 780d2002aa6de6c4883f0f568e38902e, type: 2}
+  mat: {fileID: 2100000, guid: 91712db444ec459418f0984fba36c745, type: 2}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

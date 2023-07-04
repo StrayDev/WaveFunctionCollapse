@@ -1694,10 +1694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6c82796667474a4289c201ba5ccf1a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 16
   offset: 2
-  x: 228
-  z: 18
 --- !u!114 &1077938090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1726,7 +1723,7 @@ MonoBehaviour:
   tileSetAsset: {fileID: 11400000, guid: 780d2002aa6de6c4883f0f568e38902e, type: 2}
   FileName: DefaultTileset
   CustomDirectory: D:\WaveFunctionCollapse\Assets\Json
-  UseCustomFilePath: 1
+  UseCustomFilePath: 0
 --- !u!1001 &1193141971
 PrefabInstance:
   m_ObjectHideFlags: 0

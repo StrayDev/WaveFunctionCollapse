@@ -282,12 +282,12 @@ public class ModuleImporter : MonoBehaviour
             // we check for each face
             for (var i = 0; i < NumFaces; i++)
             {
-                // special case for air tile
+/*                // special case for air tile
                 if (module.sockets[i] == "-1")
                 {
                     module.neigbours[i].Add(_airHash);
                     continue;
-                }
+                }*/
 
                 // cycle through all of the other prototypes
                 foreach (var other in tileset.modules)
