@@ -37,13 +37,14 @@ public class TerrainGeneration : MonoBehaviour
         // Create wave containing superpositions for every cell
         wave = new Wave(Chunk.CellCount, unobserved_state);
 
+        // new chunk start in center
+        // wave.Superpositions[Chunk.CellCount / 2].States.Remove(Modules[0]);
+
         // Repeat the next steps
         while (true)
         {
             // When observation fails Generation should be complete
             if (!Observation(wave)) break;
-
-            //await Task.Delay(500);
             
             // Propagate changes in state
             Propagation(wave);
@@ -134,28 +135,6 @@ public class TerrainGeneration : MonoBehaviour
 
         super_position.States.Clear();
         super_position.States.Add(singularity);
-
-        // < < < Debug Create GameObject from Singularity
-/*        var go = new GameObject($"{wave.LastCollapsedCell}");
-        var position = Chunk.GetCellPositionByIndex(wave.LastCollapsedCell);
-
-        go.transform.position = position;
-
-        // set the mesh
-        var meshdata = singularity.meshData;
-        var f = go.AddComponent<MeshFilter>();
-        f.mesh = new Mesh
-        {
-            // these need to be in order
-            vertices = ToVector3Array(meshdata.vertices),
-            normals = ToVector3Array(meshdata.normals),
-            triangles = meshdata.triangles,
-        };
-        f.mesh.RecalculateNormals();
-
-        var r = go.AddComponent<MeshRenderer>();
-        r.material = mat;*/
-
     }
 
     private Vector3[] ToVector3Array(SerializableVector3[] array)
