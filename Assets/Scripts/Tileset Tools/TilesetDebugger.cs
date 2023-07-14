@@ -33,29 +33,6 @@ public class TilesetDebugger : MonoBehaviour
 
         foreach(var module in tileSetAsset.tileset.modules)
         {
-
-            RollingPossition.x = 0;
-            RollingPossition += Vector3.back * Spaceing;
-            
-            foreach(var neighbour_hash in module.neigbours.up)
-            {
-                RollingPossition.x += Spaceing;
-
-                var neighbour = ModuleHashMap[neighbour_hash];
-                CreateModuleNeighbourPair(module, neighbour, Vector3.up);
-            }
-
-            RollingPossition.x = 0;
-            RollingPossition += Vector3.back * Spaceing;
-
-            foreach (var neighbour_hash in module.neigbours.down)
-            {
-                RollingPossition.x += Spaceing;
-
-                var neighbour = ModuleHashMap[neighbour_hash];
-                CreateModuleNeighbourPair(module, neighbour, Vector3.down);
-            }
-
             RollingPossition.x = 0;
             RollingPossition += Vector3.back * Spaceing;
 
@@ -99,6 +76,28 @@ public class TilesetDebugger : MonoBehaviour
                 var neighbour = ModuleHashMap[neighbour_hash];
                 CreateModuleNeighbourPair(module, neighbour, Vector3.back);
             }
+
+            RollingPossition.x = 0;
+            RollingPossition += Vector3.back * Spaceing;
+            
+            foreach(var neighbour_hash in module.neigbours.up)
+            {
+                RollingPossition.x += Spaceing;
+
+                var neighbour = ModuleHashMap[neighbour_hash];
+                CreateModuleNeighbourPair(module, neighbour, Vector3.up);
+            }
+
+            RollingPossition.x = 0;
+            RollingPossition += Vector3.back * Spaceing;
+
+            foreach (var neighbour_hash in module.neigbours.down)
+            {
+                RollingPossition.x += Spaceing;
+
+                var neighbour = ModuleHashMap[neighbour_hash];
+                CreateModuleNeighbourPair(module, neighbour, Vector3.down);
+            }
         }
     }
 
@@ -116,7 +115,7 @@ public class TilesetDebugger : MonoBehaviour
             return;
         }
 
-        var obj = new GameObject(module.name);
+        var obj = new GameObject($"{module.name} : Hash {module.hash}");
         var fil = obj.AddComponent<MeshFilter>();
         var ren = obj.AddComponent<MeshRenderer>();
 

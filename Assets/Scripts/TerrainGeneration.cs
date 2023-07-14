@@ -1,15 +1,12 @@
 
 // System
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Unity.Mathematics;
 using UnityEditor;
 
 // Unity
 using UnityEngine;
-using static TerrainGeneration;
 
 //
 public class TerrainGeneration : MonoBehaviour
@@ -20,7 +17,7 @@ public class TerrainGeneration : MonoBehaviour
 
     private List<Module> Modules => tileSetAsset.tileset.modules;
 
-    private Wave wave; 
+    private Wave wave;
 
     private async void Start()
     {
@@ -37,47 +34,79 @@ public class TerrainGeneration : MonoBehaviour
         // Create wave containing superpositions for every cell
         wave = new Wave(Chunk.CellCount, unobserved_state);
 
-        // new chunk start in center
-        // wave.Superpositions[Chunk.CellCount / 2].States.Remove(Modules[0]);
+        wave.LastCollapsedCell = 0;
+        CollapseSuperPosition(wave, wave.Superpositions[0]);
+        Propagation(wave);
+        
+        // marian42 says top of map needs air connectors & bottom of the map needs solid connectors
+        // we can use this to set the terrain range
+        var top_layer_indicies = Chunk.GetLayerIndices(Chunk.Top);
+        var remove_list = new List<Module>();  
+        
+
+
+/*        for (var i = 64; i < 67; i++)
+        {
+            remove_list.Clear();
+
+            // get list of modules to remove
+            foreach(var module in wave.Superpositions[i].States)
+            {
+                if(module.name.Contains("0__R0")) continue;
+                remove_list.Add(module);
+            }
+
+            // and remove them 
+            foreach(var state in remove_list)
+            {
+                wave.Superpositions[i].States.Remove(state);
+                wave.LastCollapsedCell = i;
+            }
+
+            Propagation(wave);
+            await Task.Delay(100);
+        }*/
 
         // Repeat the next steps
         while (true)
         {
             // When observation fails Generation should be complete
             if (!Observation(wave)) break;
-            
+
+            await Task.Delay(100);
+
             // Propagate changes in state
             Propagation(wave);
 
-            // Make the effect visible
-            await Task.Delay(1);
+            await Task.Delay(100);
+
         }
 
-        var index = 0;
-        foreach( var cell in wave.Superpositions ) 
-        {
-            if(cell.GetEntropy() != 1) continue;
+        /*        var index = 0;
+                foreach (var cell in wave.Superpositions)
+                {
+                    if (cell.GetEntropy() != 1) continue;
 
-            var go = new GameObject($"{index}");
-            var position = Chunk.GetCellPositionByIndex(index++);
+                    var go = new GameObject($"{index}");
+                    var position = Chunk.GetCellPositionByIndex(index++);
 
-            go.transform.position = position;
+                    go.transform.position = position;
 
-            // set the mesh
-            var meshdata = cell.Singularity.meshData;
-            var f = go.AddComponent<MeshFilter>();
-            f.mesh = new Mesh
-            {
-                // these need to be in order
-                vertices = ToVector3Array(meshdata.vertices),
-                normals = ToVector3Array(meshdata.normals),
-                triangles = meshdata.triangles,
-            };
-            f.mesh.RecalculateNormals();
+                    // set the mesh
+                    var meshdata = cell.Singularity.meshData;
+                    var f = go.AddComponent<MeshFilter>();
+                    f.mesh = new Mesh
+                    {
+                        // these need to be in order
+                        vertices = ToVector3Array(meshdata.vertices),
+                        normals = ToVector3Array(meshdata.normals),
+                        triangles = meshdata.triangles,
+                    };
+                    f.mesh.RecalculateNormals();
 
-            var r = go.AddComponent<MeshRenderer>();
-            r.material = mat;
-        }
+                    var r = go.AddComponent<MeshRenderer>();
+                    r.material = mat;
+                }*/
     }
 
     private bool Observation(Wave wave)
@@ -130,11 +159,38 @@ public class TerrainGeneration : MonoBehaviour
     private void CollapseSuperPosition(Wave wave, Superposition super_position)
     {
         // not sure this is the correct approach
-        var index = UnityEngine.Random.Range(0, super_position.GetEntropy() - 1);
+        var index = Random.Range(0, super_position.GetEntropy() - 1);
         var singularity = super_position.States[index];
 
         super_position.States.Clear();
         super_position.States.Add(singularity);
+
+        // < < < DEBUG < < <
+        CreateDebugMesh(wave, singularity);
+    }
+
+    private void CreateDebugMesh(Wave wave, Module singularity)
+    {
+        //
+        var go = new GameObject($"{singularity.name}");
+        var position = Chunk.GetCellPositionByIndex(wave.LastCollapsedCell);
+
+        go.transform.position = position;
+
+        // set the mesh
+        var meshdata = singularity.meshData;
+        var f = go.AddComponent<MeshFilter>();
+        f.mesh = new Mesh
+        {
+            // these need to be in order
+            vertices = ToVector3Array(meshdata.vertices),
+            normals = ToVector3Array(meshdata.normals),
+            triangles = meshdata.triangles,
+        };
+        f.mesh.RecalculateNormals();
+
+        var r = go.AddComponent<MeshRenderer>();
+        r.material = mat;
     }
 
     private Vector3[] ToVector3Array(SerializableVector3[] array)
@@ -167,13 +223,15 @@ public class TerrainGeneration : MonoBehaviour
             {
                 // cashe the index
                 var n_index = neighbour_indices[side];
+                
+                wave.LastCollapsedCell = n_index;
 
                 // -1 represents a cell outside of the chunk
                 if (n_index == -1) continue;
 
                 // skip if already updated
                 if (handled.Contains(n_index)) continue;
-                
+
                 var neighbour = wave.Superpositions[n_index];
 
                 UpdateNeighbour(wave, singularity, neighbour, side);
@@ -237,11 +295,16 @@ public class TerrainGeneration : MonoBehaviour
             neighbour.States.Remove(invalid_state);
         }
 
-        if (neighbour.States.Count < 1)
+        if (neighbour.States.Count < 2)
         {
-            Debug.Log("Impossibruuuu");
+            // < < < DEBUG < < <
+            CreateDebugMesh(wave, neighbour.Singularity);
+            //Debug.Log("Impossibruuuu");
         }
+
     }
+
+    // other classes
 
     internal class Wave
     {
@@ -280,14 +343,16 @@ public class TerrainGeneration : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (wave == null) return;
-        
+
         var pos = Vector3.zero;
 
-        for(var i = 0; i < wave.Superpositions.Count(); i++) 
+        for (var i = 0; i < wave.Superpositions.Count(); i++)
         {
             pos = Chunk.GetCellPositionByIndex(i);
             Gizmos.DrawWireCube(pos, Vector3.one);
             Handles.Label(pos, $"{wave.Superpositions[i].GetEntropy()}");
+            //Handles.Label(pos, $"{i}");
         }
     }
 }
+

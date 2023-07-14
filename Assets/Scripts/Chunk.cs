@@ -7,12 +7,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //
-
-[Serializable]
+[Serializable] 
 public class Chunk
 {
     // Static Constants
-    public static readonly Vector3 Bounds = Vector3.one * 16;
+    public static readonly Vector3 Bounds = Vector3.one * 8;
     public static readonly Vector3 Extents = Bounds / 2;
 
     private static int Width  => (int)Bounds.x;
@@ -23,7 +22,10 @@ public class Chunk
        
     // Constants
     public readonly Vector3 center;
-    public readonly Vector3 zero;   
+    public readonly Vector3 zero;
+
+    public static readonly int Top = CellCount - (Width * Depth);
+    public static readonly int Bottom = 0; 
 
     public Cell[] cells;
     
@@ -107,27 +109,25 @@ public class Chunk
     {
         var value = new List<int>();
 
-        int x = index % Width;
-        int y = (index / Width) % Height;
-        int z = index / (Width * Height);
+        var v = GetCellPositionByIndex(index);
 
         // Add neighbors, considering chunk boundaries
-        if (x > 0) value.Add(index - 1); // Left neighbor
+        if (v.x > 0) value.Add(index - 1); // Left neighbor
         else value.Add(-1);
 
-        if (x < Width - 1) value.Add(index + 1); // Right neighbor
+        if (v.x < Width - 1) value.Add(index + 1); // Right neighbor
         else value.Add(-1);
 
-        if (z < Depth - 1) value.Add(index + Width * Height); // Front neighbor
+        if (v.z < Height - 1) value.Add(index + Width); // Front neighbor
         else value.Add(-1);
 
-        if (z > 0) value.Add(index - Width * Height); // Back neighbor
+        if (v.z > 0) value.Add(index - Width); // Back neighbor
         else value.Add(-1);
 
-        if (y < Height - 1) value.Add(index + Width); // Top neighbor
+        if (v.y < Depth - 1) value.Add(index + Width * Height); // Top neighbor
         else value.Add(-1);
 
-        if (y > 0) value.Add(index - Width); // Bottom neighbor
+        if (v.y > 0) value.Add(index - Width * Height); // Bottom neighbor
         else value.Add(-1);
 
         return value;
@@ -136,9 +136,22 @@ public class Chunk
     internal static Vector3 GetCellPositionByIndex(int index)
     {
         var x = index % Width;
-        var y = (index / Width) % Height;
-        var z = index / (Width * Height);
+        var y = index / (Width * Height);
+        var z = (index / Width) % Height;
 
         return new Vector3(x, y, z);
+    }
+
+    internal static int[] GetLayerIndices(int first_cell_in_layer)
+    {
+        var cell_count = Width * Depth;
+        var value = new int[cell_count];
+
+        for(var i = 0; i < cell_count; i++)
+        {
+            value[i] = first_cell_in_layer + i;
+        }
+
+        return value;
     }
 }

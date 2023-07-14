@@ -44,10 +44,10 @@ public class Module
 [System.Serializable]
 public class Neigbours
 {
-    public List<int> front = new List<int>();
-    public List<int> back  = new List<int>();
     public List<int> left  = new List<int>();
     public List<int> right = new List<int>();
+    public List<int> front = new List<int>();
+    public List<int> back  = new List<int>();
     public List<int> up    = new List<int>();
     public List<int> down  = new List<int>();
 
@@ -57,18 +57,12 @@ public class Neigbours
         {
             switch (index)
             {
-                case 0:
-                    return front;
-                case 1:
-                    return back;
-                case 2:
-                    return left;
-                case 3:
-                    return right;
-                case 4:
-                    return up;
-                case 5:
-                    return down;
+                case Constants.Left:  return left;
+                case Constants.Right: return right;
+                case Constants.Front: return front;
+                case Constants.Back:  return back;
+                case Constants.Up:    return up;
+                case Constants.Down:  return down;
                 default:
                     throw new IndexOutOfRangeException("Invalid index: " + index);
             }
