@@ -507,19 +507,19 @@ public class ModuleImporter : MonoBehaviour
         switch (face)
         {
             case Constants.Left:
-                foreach (var v in vertices) value.Add(new Vector3(-v.x, v.y, -v.z));
-                break;
-
-            case Constants.Right:
-                return vertices;
-
-            case Constants.Front:
                 foreach (var v in vertices) value.Add(new Vector3(-v.z, v.y, v.x));
                 break;
 
-            case Constants.Back: // no transform needed
+            case Constants.Right:
                 foreach (var v in vertices) value.Add(new Vector3(v.z, v.y, -v.x));
                 break;
+
+            case Constants.Front:
+                foreach (var v in vertices) value.Add(new Vector3(-v.x, v.y, -v.z));
+                break;
+
+            case Constants.Back: // no transform needed
+                return vertices;
 
             case Constants.Up:
                 foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, -v.y));
@@ -562,7 +562,7 @@ public class ModuleImporter : MonoBehaviour
     private const float Offset = 0.7f;
 
     private Vector3[] _offsetList =
-    {
+{
         Offset * Vector3.left,
         Offset * Vector3.right,
         Offset * Vector3.forward,
@@ -570,7 +570,7 @@ public class ModuleImporter : MonoBehaviour
         Offset * Vector3.up,
         Offset * Vector3.down,
     };
-    
+
     private void OnDrawGizmos()
     {
         if (!so) return;
