@@ -404,7 +404,7 @@ MonoBehaviour:
   tileSetAsset: {fileID: 11400000, guid: 780d2002aa6de6c4883f0f568e38902e, type: 2}
   FileName: DefaultTileset
   CustomDirectory: D:\WaveFunctionCollapse\Assets\Json
-  UseCustomFilePath: 1
+  UseCustomFilePath: 0
 --- !u!114 &574093781
 MonoBehaviour:
   m_ObjectHideFlags: 0

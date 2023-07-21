@@ -34,38 +34,12 @@ public class TerrainGeneration : MonoBehaviour
         // Create wave containing superpositions for every cell
         wave = new Wave(Chunk.CellCount, unobserved_state);
 
-        wave.LastCollapsedCell = 0;
-        CollapseSuperPosition(wave, wave.Superpositions[0]);
-        Propagation(wave);
         
-        // marian42 says top of map needs air connectors & bottom of the map needs solid connectors
-        // we can use this to set the terrain range
-        var top_layer_indicies = Chunk.GetLayerIndices(Chunk.Top);
-        var remove_list = new List<Module>();  
-        
+/*        var index = Chunk.CellCount / 4;
+        CollapseSuperPosition(wave, wave.Superpositions[index]);
+        wave.LastCollapsedCell = index;
+        Propagation(wave);*/
 
-
-/*        for (var i = 64; i < 67; i++)
-        {
-            remove_list.Clear();
-
-            // get list of modules to remove
-            foreach(var module in wave.Superpositions[i].States)
-            {
-                if(module.name.Contains("0__R0")) continue;
-                remove_list.Add(module);
-            }
-
-            // and remove them 
-            foreach(var state in remove_list)
-            {
-                wave.Superpositions[i].States.Remove(state);
-                wave.LastCollapsedCell = i;
-            }
-
-            Propagation(wave);
-            await Task.Delay(100);
-        }*/
 
         // Repeat the next steps
         while (true)
@@ -73,12 +47,12 @@ public class TerrainGeneration : MonoBehaviour
             // When observation fails Generation should be complete
             if (!Observation(wave)) break;
 
-            await Task.Delay(100);
+            await Task.Delay(1);
 
             // Propagate changes in state
             Propagation(wave);
 
-            await Task.Delay(100);
+            await Task.Delay(1);
 
         }
 
@@ -159,7 +133,8 @@ public class TerrainGeneration : MonoBehaviour
     private void CollapseSuperPosition(Wave wave, Superposition super_position)
     {
         // not sure this is the correct approach
-        var index = Random.Range(0, super_position.GetEntropy() - 1);
+        var entropy = super_position.GetEntropy();
+        var index = Random.Range(0, entropy);
         var singularity = super_position.States[index];
 
         super_position.States.Clear();
@@ -208,6 +183,7 @@ public class TerrainGeneration : MonoBehaviour
         // add the last collapsed cell to a que
         var handled = new List<int>();
         var queue = new Queue<int>();
+        var end_queue = new Queue<int>();
 
         queue.Enqueue(wave.LastCollapsedCell);
 
@@ -215,8 +191,8 @@ public class TerrainGeneration : MonoBehaviour
         while (queue.Count > 0)
         {
             var index = queue.Dequeue();
-            var singularity = wave.Superpositions[index].Singularity;
             var neighbour_indices = Chunk.GetNeighboursByIndex(index);
+            var singularity = wave.Superpositions[index].Singularity;
 
             // foreach neighbour 
             for (var side = 0; side < Constants.FaceCount; side++)
@@ -237,10 +213,13 @@ public class TerrainGeneration : MonoBehaviour
                 UpdateNeighbour(wave, singularity, neighbour, side);
 
                 // add neighbour to que
-                if (queue.Contains(n_index)) continue;
+                if (queue.Contains(n_index) || end_queue.Contains(n_index)) continue;
 
-                queue.Enqueue(n_index);
+                end_queue.Enqueue(n_index);
             }
+
+            // make sure the queue updates in order
+            while (end_queue.Count > 0) queue.Enqueue(end_queue.Dequeue());
 
             // add cell to handled list 
             handled.Add(index);
@@ -295,50 +274,19 @@ public class TerrainGeneration : MonoBehaviour
             neighbour.States.Remove(invalid_state);
         }
 
-        if (neighbour.States.Count < 2)
+        if (neighbour.States.Count == 1)
         {
-            // < < < DEBUG < < <
             CreateDebugMesh(wave, neighbour.Singularity);
-            //Debug.Log("Impossibruuuu");
         }
 
-    }
-
-    // other classes
-
-    internal class Wave
-    {
-        public int LastCollapsedCell = -1;
-
-        public List<Superposition> Superpositions;
-
-        public Wave(int _size, List<Module> unobserved_state)
+        if(neighbour.States.Count < 1)
         {
-            Superpositions = new List<Superposition>();
-
-            for (var i = 0; i < _size; i++)
-            {
-                var superposition = new Superposition
-                {
-                    States = new List<Module>(unobserved_state)
-                };
-
-                Superpositions.Add(superposition);
-            }
-        }
-    }
-
-    internal class Superposition
-    {
-        public List<Module> States;
-
-        public int GetEntropy()
-        {
-            return States.Count;
+            Debug.Log("Impossible state");
         }
 
-        public Module Singularity => States[0];
     }
+
+    // GUI
 
     private void OnDrawGizmos()
     {
@@ -346,12 +294,31 @@ public class TerrainGeneration : MonoBehaviour
 
         var pos = Vector3.zero;
 
+        Gizmos.color = Color.white;
+
         for (var i = 0; i < wave.Superpositions.Count(); i++)
         {
             pos = Chunk.GetCellPositionByIndex(i);
             Gizmos.DrawWireCube(pos, Vector3.one);
             Handles.Label(pos, $"{wave.Superpositions[i].GetEntropy()}");
             //Handles.Label(pos, $"{i}");
+        }
+
+        List<Color> colors = new List<Color>
+        {
+            Color.red, Color.green, Color.blue, Color.yellow, Color.magenta, Color.black
+        };
+
+        var n = Chunk.GetNeighboursByIndex(100);
+        for (var i = 0; i < n.Count; i++)
+        {
+            if (i == -1) continue;
+
+
+            Gizmos.color = colors[i];
+
+            pos = Chunk.GetCellPositionByIndex(n[i]);
+            Gizmos.DrawWireCube(pos, Vector3.one * 0.75f);
         }
     }
 }

@@ -17,7 +17,7 @@ public class TileSet
 [System.Serializable]
 public class Module
 {
-    public Module() { } // dny buy this prevents errors in the values
+    public Module() { } 
 
     public Module(string name, int rotation, MeshData meshData)
     {

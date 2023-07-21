@@ -13,32 +13,17 @@ public class ModuleImporter : MonoBehaviour
     public Dictionary<string, string> socketPairMap = new Dictionary<string, string>();
     private int _airHash;
 
-    // face constants
-        private const int Front = 0;
-        private const int Back = 1;
-        private const int Left = 2;
-        private const int Right = 3;
-        private const int Up   = Constants.Up;
-        private const int Down = Constants.Down;
-
-    /*    private const int Left  = Constants.Left;
-        private const int Right = Constants.Right;
-        private const int Front = Constants.Front;
-        private const int Back  = Constants.Back;
-        private const int Up    = Constants.Up;
-        private const int Down  = Constants.Down;*/
 
     public void ImportModules()
     {
         sockets = new Dictionary<string, Vector3[]>();
+        
         sockets.Clear();
-
-        sockets.Add("-1", new Vector3[1]);
-
         socketPairMap.Clear();
-
         so.tileset.modules.Clear();
 
+        // manually adds air tile and module
+        sockets.Add("-1", new Vector3[1]);
         AddAirModule(so.tileset);
 
         // get all of the mesh filters
@@ -50,16 +35,6 @@ public class ModuleImporter : MonoBehaviour
 
         // create 3 rotations for each prototype
         DefineRotationVariants(so.tileset);
-
-        // hack for error in import 
-        // < < < This will need to be fixed
-        for (var i = 0; i < so.tileset.modules.Count; i++)
-        {
-            if (so.tileset.modules[i].name.Contains("10"))
-            {
-                so.tileset.modules[i].sockets[Down] = "v2";
-            }
-        }
 
         // define possible neighbours
         DefinePossibleNeighbours(so.tileset);
@@ -77,10 +52,10 @@ public class ModuleImporter : MonoBehaviour
             var module = new Module($"{uid++}__", 0, meshData);
 
             // for each face
-            for (var i = 0; i < Constants.FaceCount; i++)
+            for (var i = 0; i < Constants.FaceCount; i++) 
             {
                 // determine if horizontal or vertical face
-                var isVertical = i == Up || i == Down;
+                var isVertical = i == Constants.Up || i == Constants.Down;
 
                 // get socket vertices aligned to the x axis
                 var rotatedVertices = GetRotatedVertices(i, mesh.vertices);
@@ -100,7 +75,7 @@ public class ModuleImporter : MonoBehaviour
                     if (socketPairMap.ContainsKey(socket))
                     {
                         var isMale = socket.Contains('m');
-                        var shouldBeMale = (i == Front || i == Left);
+                        var shouldBeMale = (i == Constants.Front || i == Constants.Left);
 
                         if ((!isMale && shouldBeMale || isMale && !shouldBeMale))
                         {
@@ -216,8 +191,8 @@ public class ModuleImporter : MonoBehaviour
         };
 
         // add top and bottom
-        variant.sockets[Up] = original.sockets[Up];
-        variant.sockets[Down] = original.sockets[Down];
+        variant.sockets[Constants.Up] = original.sockets[Constants.Up];
+        variant.sockets[Constants.Down] = original.sockets[Constants.Down];
 
         // rotate sides
         switch (rotation)
@@ -289,16 +264,16 @@ public class ModuleImporter : MonoBehaviour
             // we check for each face
             for (var i = 0; i < Constants.FaceCount; i++)
             {
-                // special case for air tile
-                if (module.sockets[i] == "-1")
-                {
-                    module.neigbours[i].Add(_airHash);
-                    continue;
-                }
-
                 // cycle through all of the other prototypes
                 foreach (var other in tileset.modules)
                 {
+                    if (module.sockets[i] == "-1" && !module.name.Contains("Air"))
+                    {
+                        module.neigbours[i].Clear();
+                        module.neigbours[i].Add(_airHash);
+                        continue;
+                    }
+
                     var otherFace = GetOtherFace(i);
 
                     // dont repeat neighbours
@@ -327,7 +302,7 @@ public class ModuleImporter : MonoBehaviour
                     if (doesNotMatch) continue;
 
                     // top and bottom rotation needs to match 
-                    var isVertical = (i == Up || i == Down);
+                    var isVertical = (i == Constants.Up || i == Constants.Down);
                     if (isVertical && module.rotation != other.rotation) continue;
 
                     // on match add to list of neighbors
@@ -526,7 +501,7 @@ public class ModuleImporter : MonoBehaviour
                 break;
 
             case Constants.Down:
-                // Note - dropped the inversion -v.z for matching with topface
+                // Dropped the inversion -v.z for rotation matching with topface
                 foreach (var v in vertices) value.Add(new Vector3(v.x, v.z, v.y));
                 break;
         }
